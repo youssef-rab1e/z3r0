@@ -29,77 +29,72 @@ class Token:
     type: TokenType
 
 def isskipper(src: str):
-    return src == " " | src == "\n" | src == "\t"
+    return src == " " or src == "\n" or src == "\t"
 
 def crt_token(value: str, type: TokenType):
-    return {value , type}
+    return Token(value, type)
 
 def isalpha(src: str):
     return src.upper() != src.lower()
 
 def isnum(src: str) -> bool:
-    return src[:1].isdigit()
+    return src.isdigit()
 
 def tokenize(SourceCode: str):
     """Takes Src and Outputs a list Tokens"""
     tokens = []
-    src = SourceCode.split("")
-    # Handle Single Char Tokens
-    while src.__len__ > 0:
+    src = list(SourceCode)
+    
+    while len(src) > 0:
+        # Skip whitespace
+        if isskipper(src[0]):
+            src.pop(0)
+            continue
+            
+        # Handle single character tokens
         if src[0] == "(":
-          token = crt_token(src.pop(0) , TokenType.OPENPARENTHESIS)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.OPENPARENTHESIS))
         elif src[0] == ")":
-          token = crt_token(src.pop(0), TokenType.CLOSEPARENTHESIS)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.CLOSEPARENTHESIS))
         elif src[0] == "[":
-          token = crt_token(src.pop(0), TokenType.OPENBRACKET)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.OPENBRACKET))
         elif src[0] == "]":
-          token = crt_token(src.pop(0), TokenType.CLOSEBRACKET)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.CLOSEBRACKET))
         elif src[0] == "{":
-          token = crt_token(src.pop(0), TokenType.OPENCURLY)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.OPENCURLY))
         elif src[0] == "}":
-          token = crt_token(src.pop(0), TokenType.CLOSECURLY)
-          tokens.append(token)
-        elif src[0] == "+" | src[0] == "-" | src[0] == "*" | src[0] == "/":
-          token = crt_token(src.pop(0), TokenType.OPERATOR)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.CLOSECURLY))
+        elif src[0] in "+-*/":
+            tokens.append(crt_token(src.pop(0), TokenType.OPERATOR))
         elif src[0] == "=":
-          token = crt_token(src.pop(0), TokenType.EQUALS)
-          tokens.append(token)
-        elif src[0] == "true" | src[0] == "false":
-          token = crt_token(src.pop(0), TokenType.BOOLEAN)
-          tokens.append(token)
+            tokens.append(crt_token(src.pop(0), TokenType.EQUALS))
         elif src[0] == ",":
-          token = crt_token(src.pop(0), TokenType.COMA)
-          tokens.append(token)
-        elif src[0] in [1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 0]:
-          token = crt_token(src.pop(0), TokenType.NUMBER)
-          tokens.append(token)
-        else :
-          # Here We Will Handle MultiChar tokens Or Unkown Ones
-          if isnum(src[0]):
+            tokens.append(crt_token(src.pop(0), TokenType.COMA))
+        # Handle multi-character tokens
+        elif isnum(src[0]):
             num = ""
-            while src.__len__ > 0 and isnum(src[0]):
-              num += src.pop(0)
+            while len(src) > 0 and isnum(src[0]):
+                num += src.pop(0)
             tokens.append(crt_token(num, TokenType.NUMBER))
-          elif isalpha(src[0]):
+        elif isalpha(src[0]):
             identifier = ""
-            while src.__len__ > 0 and isalpha(src[0]):
-              identifier += src.pop(0)
+            while len(src) > 0 and isalpha(src[0]):
+                identifier += src.pop(0)
             # Check for reserved keywords
             reserved = KEYWORDS.get(identifier)
-            if reserved ==  None:
-              tokens.append(crt_token(identifier, TokenType.IDENTIFIER))
+            if reserved is None:
+                tokens.append(crt_token(identifier, TokenType.IDENTIFIER))
             else:
-              tokens.append(crt_token(identifier, reserved))
-          elif isskipper(src[0]):
-            src.pop(0)
-          else:
+                tokens.append(crt_token(identifier, reserved))
+        else:
             print(f"Unrecognized Character Found in Source: {src[0]}")
             exit(1)
     return tokens
 
+# Test the lexer
+if __name__ == "__main__":
+    test_input = "let x = 564"
+    print(f"Input: {test_input}")
+    tokens = tokenize(test_input)
+    print(f"Number of tokens: {len(tokens)}")
+    print(tokens)
