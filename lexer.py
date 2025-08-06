@@ -8,7 +8,8 @@ class TokenType(Enum):
     IDENTIFIER = "IDENTIFIER"  
     EQUALS = "EQUALS" 
     COMA = "COMA" 
-    OPERATOR = "OPERATOR"  
+    OPERATOR = "OPERATOR" 
+    BOOLEAN = "BOOLEAN" 
     OPENPARENTHESIS = "OPENPARENTHESIS" 
     CLOSEPARENTHESIS = "CLOSEPARENTHESIS" 
     OPENBRACKET = "OPENBRACKET" 
@@ -20,6 +21,8 @@ class TokenType(Enum):
 
 KEYWORDS: dict[str, TokenType] = {
     "let": TokenType.LETTOKEN,
+    "true": TokenType.BOOLEAN,
+    "false": TokenType.BOOLEAN,
 }
 
 @dataclass
