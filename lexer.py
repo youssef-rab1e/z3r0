@@ -7,7 +7,7 @@ class TokenType(Enum):
     NUMBER = "NUMBER" 
     IDENTIFIER = "IDENTIFIER"  
     EQUALS = "EQUALS" 
-    COMA = "COMA" 
+    COMMA = "COMMA" 
     OPERATOR = "OPERATOR" 
     BOOLEAN = "BOOLEAN" 
     OPENPARENTHESIS = "OPENPARENTHESIS" 
@@ -31,7 +31,10 @@ class Token:
     type: TokenType
 
 def isskipper(src: str):
-    return src == " " or src == "\n" or src == "\t"
+    return src == " "  or src == "\t"
+
+def isnewline(src: str):
+    return src == "\n"
 
 def crt_token(value: str, type: TokenType):
     return Token(value, type)
@@ -46,13 +49,16 @@ def tokenize(SourceCode: str):
     """Takes Src and Outputs a list Tokens"""
     tokens = []
     src = list(SourceCode)
-    
+    i = 0
     while len(src) > 0:
         # Skip whitespace
         if isskipper(src[0]):
             src.pop(0)
             continue
-            
+        elif isnewline(src[0]):
+            i +=1
+            src.pop(0)
+            continue
         # Handle single character tokens
         if src[0] == "(":
             tokens.append(crt_token(src.pop(0), TokenType.OPENPARENTHESIS))
@@ -71,7 +77,7 @@ def tokenize(SourceCode: str):
         elif src[0] == "=":
             tokens.append(crt_token(src.pop(0), TokenType.EQUALS))
         elif src[0] == ",":
-            tokens.append(crt_token(src.pop(0), TokenType.COMA))
+            tokens.append(crt_token(src.pop(0), TokenType.COMMA))
         # Handle multi-character tokens
         elif isnum(src[0]):
             num = ""
@@ -89,7 +95,7 @@ def tokenize(SourceCode: str):
             else:
                 tokens.append(crt_token(identifier, reserved))
         else:
-            print(f"Unrecognized Character Found in Source: {src[0]}")
+            print(f"Unrecognized Character Found in Source: {src[0]} in line {i + 1}")
             exit(1)
     return tokens
 
